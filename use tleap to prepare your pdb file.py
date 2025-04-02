@@ -2,6 +2,7 @@ use tleap to prepare your pdb file in the correct amber format:
 
 module purge
 module load cpu/0.17.3b  gcc/10.2.0/npcyll4  openmpi/4.1.3/oq3qvsv amber/22
+
 tleap -f $AMBERHOME/dat/leap/cmd/leaprc.DNA.bsc1  #in this case this forcefield is for DNA
   source leaprc.protein.ff14SB #I will consider this for proteins
   source leaprc.water.tip3p #and water
