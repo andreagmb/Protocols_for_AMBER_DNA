@@ -1,0 +1,46 @@
+# I had a hard time figuring out this COARSE GRAIN system (SIRAH/AMBER)
+# so here is my quick guide to how actually do it
+# here is the original tutorial https://sirahff.github.io/documentation/Tutorials%20amber.html
+# I hope this makes someone else happy
+------------------------------------------------------------------------
+#  I recommend using ubuntu
+#  1. DOWNLOAD THE GZ FILE FROM GITHUB 
+#  keep all files in the same folder, the sirah, amber, and working files. 
+#  https://github.com/SIRAHFF/documentation/releases/download/AMBER/sirah_x2.3_24-07.amber.tar.gz
+
+
+rm sirah.amber #remove in case you have previously used
+ln -s /mnt/c/Users/bla/sirah_x2.3_24-07.amber sirah.amber #create a link for the folder
+  
+tar -xzvf sirah_x2.3_24-07.amber.tar.gz
+  # OR 
+cd /mnt/c/Users/BLABLABLA/Downloads/  #OPENS THE DIRECTORY
+tar -xzvf sirah_x2.3_24-07.amber.tar.gz
+
+#ASSUMING YOU HAVE A PDB FILE WITH DNA AND PROTEIN (either/and/or)
+  #here using 1ny7.pdb from rcsb  https://www.rcsb.org/structure/1NY7
+  # the .pl command is comming from the downloaded sirah folder
+  # the coarse grain file is the _cg.pdb file
+
+  ./sirah.amber/tools/CGCONV/cgconv.pl -i 1ny7.pdb  -o 1ny7_cg.pdb
+
+#NOW OPEN AMBER TLEAP
+ # I AM USING THE SDSC SUPERCOMPUTER FRMOM NOW ON
+module purge
+module load slurm cpu/0.17.3b  gcc/10.2.0/npcyll4  openmpi/4.1.3/oq3qvsv amber/22
+tleap
+  #DOWNLOAD THE SIRAH FOLDER INTO YOUR WORKING DIRECTORY
+addPath /home/sirah_x2.3_24-07.amber/sirah_x2.3_24-07.amber/ 
+source leaprc.sirah
+protein = loadpdb 1ny7-1.sirah.pdb
+  # THE TERM 'protein' IS JUST A TERM TO REFER TO THE PDB FILE, NO MORE THAN THAT.
+saveAmberParmNetcdf  protein 1ny7.sirah.prmtop 1ny7.sirah.ncrst
+
+# NOW MINIMIZATION
+  
+ 
+  
+
+  
+
+
