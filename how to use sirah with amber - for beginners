@@ -18,11 +18,11 @@ cd /mnt/c/Users/BLABLABLA/Downloads/  #OPENS THE DIRECTORY
 tar -xzvf sirah_x2.3_24-07.amber.tar.gz
 
 #ASSUMING YOU HAVE A PDB FILE WITH DNA AND PROTEIN (either/and/or)
-  #here using 1ny7.pdb from rcsb  https://www.rcsb.org/structure/1NY7
+  #here using 1ny7.pdb from rcsb  https://www.rcsb.org/structure/1NY7 with a DNA fragnebt
   # the .pl command is comming from the downloaded sirah folder
   # the coarse grain file is the _cg.pdb file
 
-  ./sirah.amber/tools/CGCONV/cgconv.pl -i 1ny7.pdb  -o 1ny7_cg.pdb
+  ./sirah.amber/tools/CGCONV/cgconv.pl -i 1ny7-ccdna-1.pdb  -o 1ny7-ccdna-1.sirah.pdb
 
 #NOW OPEN AMBER TLEAP
  # I AM USING THE SDSC SUPERCOMPUTER FRMOM NOW ON
@@ -32,15 +32,29 @@ tleap
   #DOWNLOAD THE SIRAH FOLDER INTO YOUR WORKING DIRECTORY
 addPath /home/sirah_x2.3_24-07.amber/sirah_x2.3_24-07.amber/ 
 source leaprc.sirah
-protein = loadpdb 1ny7-1.sirah.pdb
-  # THE TERM 'protein' IS JUST A TERM TO REFER TO THE PDB FILE, NO MORE THAN THAT.
-saveAmberParmNetcdf  protein 1ny7.sirah.prmtop 1ny7.sirah.ncrst
+protein = loadpdb 1ny7-ccdna-1.sirah.pdb
+  
+# THE TERM 'protein' IS JUST A TERM TO REFER TO THE PDB FILE, NO MORE THAN THAT.
+
+saveAmberParmNetcdf  protein 1ny7-ccdna-1.sirah.prmtop 1ny7-ccdna-1.sirah.ncrst
 
 # NOW MINIMIZATION
-  
- 
-  
+$AMBERHOME/bin/pmemd -O -i /home/sirah_x2.3_24-07.amber/sirah_x2.3_24-07.amber/tutorial/1/PMEMD.GPU/em_GB.in -p 1ny7-ciruclar-dna-1cps.prmtop -c 1ny7-ciruclar-dna-1cps.ncrst -o 1ny7-ccdna-1.sirah_em.out -r 1ny7-ccdna-1.sirah_cg_em.ncrst
+#|----command pmemd-|      |---reference to the command in the sirah folder---------------------------------|  |----file in coarse grain-------------------------------------|   |-outputs------------------------------------------|    
+# OBTAINED:  
+# 1ny7.sirah_cg_em.ncrst 
+# 1ny7.sirah_em.out
 
-  
+#if your file is too large, consider adding this to the command for a more efficient use of the computational resources
+#& alias debug='srun --partition=debug --pty --account=XXX --mem=256G --nodes=1 --ntasks-per-node=32 -t 00:30:00 --wait=0 --export=ALL /bin/bash'
+
+# NOW EQUILIBRATION
+$AMBERHOME/bin/pmemd -O -i /home/sirah_x2.3_24-07.amber/sirah_x2.3_24-07.amber/tutorial/1/PMEMD.GPU/em_GB.in -p 1ny7-ciruclar-dna-1cps.prmtop -c 1ny7-ccdna-1.sirah_cg_em.ncrst -o 1ny7-ccdna-1.sirah_cg_eq2.out -r 1ny7-ciruclar-dna-1cps_cg_eq2.ncrst -x 1ny7-ciruclar-dna-1cps_cg_eq2.nc
+#|----command pmemd-|      |---reference to the command in the sirah folder---------------------------------|  |----file in coarse grain-------------------------------------|   |-outputs---------------------------------------------------------------------------------------------------|    
+
+# NOW PRODUCTION
+$AMBERHOME/bin/pmemd -O -i /home/sirah_x2.3_24-07.amber/sirah_x2.3_24-07.amber/tutorial/1/PMEMD.GPU/em_GB.in -p 1ny7-ciruclar-dna-1cps.prmtop -c 1ny7-ccdna-1.sirah_cg_em.ncrst -o 1ny7-ccdna-1.sirah_cg_eq2.out -r 1ny7-ciruclar-dna_cg_md.ncrst -x 1ny7-ciruclar-dna-dna_cg_md.nc
+#|----command pmemd-|      |---reference to the command in the sirah folder---------------------------------|  |----file in coarse grain-------------------------------------|   |-outputs---------------------------------------------------------------------------------------------------|    
+
 
 
